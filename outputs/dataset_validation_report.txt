@@ -1,0 +1,18 @@
+PID DATASET VALIDATION REPORT
+================================
+Dataset: /mnt/data/pid_auto_tuner_work/pid_auto_tuner-main/data/pid_training_dataset.csv
+Rows: 180
+Columns: 12
+Exact duplicate rows: 0
+Repeated Kp/Ki/Kd combinations: 0
+Rows with invalid PID gains: 0
+Rows with invalid target/duration/metrics: 0
+Missing required values: {}
+Infinite values by column: {}
+Missing rise times: 30
+Missing settling times: 170
+Configurations meeting error <= 2% and overshoot <= 5%: 10
+
+Missing timing metrics are not automatically errors:
+they may indicate that the response did not reach the required
+threshold within the simulation duration.

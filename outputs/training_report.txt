@@ -1,0 +1,10 @@
+From-scratch Decision Tree training report
+Total motor profiles: 50
+Training motor profiles: 40
+Held-out motor profiles: 10
+Training rows: 40
+Features: J, b, Kt, Ke, R, L, load_torque, target_rpm, max_voltage
+Targets: Kp, Ki, Kd
+Maximum tree depth: 5
+Minimum samples per leaf: 3
+The held-out motor IDs are saved in decision_tree.json for reproducible evaluation.
