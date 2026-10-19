@@ -24,12 +24,21 @@ def response_metrics(motor, gains, duration=6.0, dt=0.005):
 
 
 def score_metrics(metrics, duration=6.0):
+    """Score responses while strongly prioritizing the stated control limits."""
+    error = min(metrics["steady_state_error_percent"], 100.0)
+    overshoot = min(metrics["overshoot_percent"], 100.0)
     settling = metrics["settling_time_s"]
     if not math.isfinite(settling):
         settling = duration * 2.0
+
+    # Explicitly penalize violating either acceptance limit. This keeps a
+    # slightly faster but inaccurate response from winning on IAE alone.
+    constraint_penalty = 100.0 * max(0.0, error - 2.0)
+    constraint_penalty += 100.0 * max(0.0, overshoot - 5.0)
     return (
-        10.0 * min(metrics["steady_state_error_percent"], 100.0)
-        + 3.0 * min(metrics["overshoot_percent"], 100.0)
+        constraint_penalty
+        + 10.0 * error
+        + 3.0 * overshoot
         + 0.5 * settling
         + 0.01 * min(metrics["IAE_rpm_s"], 100000.0)
     )
@@ -61,13 +70,20 @@ def refine_gains(motor, initial_gains, seed=42, duration=6.0, dt=0.005, n_candid
                     min(0.01, max(0.0, kd0 * fd)),
                 ))
 
-    # Include broad candidates so zero or tiny predicted gains can escape a
-    # narrow multiplicative neighborhood. These ranges match data generation.
+    # Add a structured high-gain grid as well as randomized trials. Some
+    # heavier/high-load motors need gains beyond the original training search.
+    for kp in (0.05, 0.08, 0.10, 0.125, 0.15, 0.20, 0.25):
+        for ki in (0.005, 0.01, 0.02, 0.03, 0.04, 0.06):
+            for kd in (0.0, 0.001, 0.003, 0.006):
+                candidates.append((kp, ki, kd))
+
+    # Random exploration extends beyond the original training-data ranges.
+    # These are simulation candidates, not validated real-motor settings.
     for _ in range(n_candidates):
         candidates.append((
-            rng.uniform(0.005, 0.10),
-            rng.uniform(0.0, 0.02),
-            rng.uniform(0.0, 0.005),
+            rng.uniform(0.005, 0.25),
+            rng.uniform(0.0, 0.06),
+            rng.uniform(0.0, 0.01),
         ))
 
     best = None
