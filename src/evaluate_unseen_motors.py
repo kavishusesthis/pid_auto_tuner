@@ -104,6 +104,23 @@ def main():
     )
     print(f"Raw ML-gain responses meeting error <= 2% and overshoot <= 5%: {raw_good}/{len(results)}")
     print(f"After simulation-based refinement: {refined_good}/{len(results)}")
+    failed_refined = [
+        r for r in results
+        if not (
+            r["refined_steady_state_error_percent"] <= 2.0
+            and r["refined_overshoot_percent"] <= 5.0
+        )
+    ]
+    if failed_refined:
+        print("Motors still outside one or both limits after refinement:")
+        for r in failed_refined:
+            print(
+                f"  {r['motor_id']}: error="
+                f"{r['refined_steady_state_error_percent']:.3f}%, "
+                f"overshoot={r['refined_overshoot_percent']:.3f}%"
+            )
+    else:
+        print("All held-out motors met both limits after refinement.")
     print(f"Detailed results saved: {RESULT_PATH}")
     print("Interpretation: this is a small simulation prototype; metrics do not prove real-motor safety.")
 
