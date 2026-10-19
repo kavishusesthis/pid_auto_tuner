@@ -611,3 +611,44 @@ python src\test_decision_tree.py
 ### Important interpretation
 
 The selected gains are the best candidates found by the finite search, not proven global optima. A small Decision Tree trained on a limited synthetic dataset is a prototype, not proof of generalization to every motor. The raw ML prediction is measured separately from the simulation-based refinement; the latter searches candidate gains in the simulator and selects the best-scoring response. This project is simulation-only and does not establish safe gains for real hardware.
+
+## Expanded motor-aware dataset and unseen-motor evaluation
+
+The motor-aware pipeline samples 200 simulated DC motor profiles and tests 64 PID-gain candidates per motor (4 fixed candidates plus 60 random candidates), producing 12,800 candidate experiments when all simulations are valid.
+
+### Generate the datasets
+
+Run from the repository root:
+
+```powershell
+python src\generate_motor_dataset.py
+```
+
+Outputs:
+- `data/motor_training_data.csv`: candidate experiments for all sampled motors.
+- `data/optimal_pid_dataset.csv`: one best-found candidate per motor, selected by the project's composite score.
+
+The selected gains are the best among the candidates tested; they are not guaranteed global optima. Running the generator overwrites these dataset files, so back them up if prior outputs need to be retained.
+
+### Train and evaluate on held-out motors
+
+```powershell
+python src\train_gain_model.py
+python src\evaluate_unseen_motors.py
+```
+
+The training script uses 80% of motor profiles for training and reserves 20% as unseen test motors. The current evaluation reports both raw ML-predicted gains and gains refined using additional simulation-based candidate search. These are different methods and must be reported separately.
+
+### Recorded local evaluation (2026-10-19)
+
+After generating the 200-profile dataset:
+- Candidate experiments: 12,800.
+- Selected motor profiles: 200.
+- Training profiles: 160.
+- Held-out profiles: 40.
+- Raw ML predictions meeting steady-state error <= 2% and overshoot <= 5%: 7/40 (17.5%).
+- After simulation-based refinement: 38/40 (95%).
+
+Gain prediction RMSE: Kp = 0.025885, Ki = 0.004415, Kd = 0.001720.
+
+These results are from a small simulation prototype. The 95% result applies to the hybrid ML-plus-refinement pipeline, not raw ML predictions alone, and does not establish real-motor safety. Re-run the evaluation scripts to reproduce the results for the current code and generated data.
