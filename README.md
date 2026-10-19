@@ -647,8 +647,9 @@ After generating the 200-profile dataset:
 - Training profiles: 160.
 - Held-out profiles: 40.
 - Raw ML predictions meeting steady-state error <= 2% and overshoot <= 5%: 7/40 (17.5%).
-- After simulation-based refinement: 38/40 (95%).
+- After simulation-based refinement: 39/40 (97.5%).
+- Remaining failure: M0037, with 3.479% steady-state error and 0.000% overshoot.
 
 Gain prediction RMSE: Kp = 0.025885, Ki = 0.004415, Kd = 0.001720.
 
-These results are from a small simulation prototype. The 95% result applies to the hybrid ML-plus-refinement pipeline, not raw ML predictions alone, and does not establish real-motor safety. Re-run the evaluation scripts to reproduce the results for the current code and generated data.
+These results are from a small simulation prototype. The latest 97.5% result applies to the hybrid ML-plus-refinement pipeline, not raw ML predictions alone, and does not establish real-motor safety. Re-run the evaluation scripts to reproduce the results for the current code and generated data.
