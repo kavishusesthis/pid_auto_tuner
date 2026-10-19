@@ -1,8 +1,8 @@
 From-scratch Decision Tree training report
-Total motor profiles: 50
-Training motor profiles: 40
-Held-out motor profiles: 10
-Training rows: 40
+Total motor profiles: 200
+Training motor profiles: 160
+Held-out motor profiles: 40
+Training rows: 160
 Features: J, b, Kt, Ke, R, L, load_torque, target_rpm, max_voltage
 Targets: Kp, Ki, Kd
 Maximum tree depth: 5
